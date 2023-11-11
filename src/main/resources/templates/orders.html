@@ -33,7 +33,7 @@
 								<tr>
 									<th>Khách hàng</th>
 									<th>Số điện thoại</th>
-									<th>Email</th>
+									<th>Địa chỉ</th>
 									<th>Tình trạng</th>
 									<th>Tổng tiền</th>
 									<th>Chức năng</th>
@@ -43,7 +43,7 @@
 								<tr th:each="order : ${listOrders}">
 									<td th:text="${order.full_name}"></td>
 									<td th:text="${order.phone}"></td>
-									<td th:text="${order.email}"></td>
+									<td th:text="${order.Address}"></td>
 									<td>
 										<span th:text="${order.Status}" th:if="${order.Status == 'Chưa giao hàng'}"
 											class="badge badge-danger">
@@ -56,8 +56,9 @@
 									<td th:text="${#numbers.formatDecimal(order.TotalPrice, 0, 'COMMA', 0, 'POINT')}">
 									</td>
 									<td>
-										<button class="btn btn-success" type="button">Tiếp nhận đơn hàng
-										</button>
+										<a class="btn btn-success" type="button" title="Chi tiết đơn hàng"
+											th:attr="data-id=${order.Id}" style="color: #fff">Chi tiết đơn hàng
+										</a>
 									</td>
 								</tr>
 							</tbody>
@@ -67,6 +68,28 @@
 			</div>
 		</div>
 	</main>
+	<script th:src="@{../vendor/jquery/jquery-3.2.1.min.js}"></script>
+	<script>
+		$('body').on('click', '.btn-success', function () {
+			var Id = $(this).data('id');
+			if (parseInt(Id) > 0) {
+				OrderById(Id);
+			}
+		});
+		function OrderById(Id) {
+			$.ajax({
+				type: "GET",
+				url: "/admin/orders/detail",
+				data: {id: Id},
+				success: function (data) {
+					window.location.href = "/admin/orders/detail?id="+Id;
+				},
+				error: function (data) {
+					
+				}
+			});
+		}
+	</script>
 </body>
 
 </html>

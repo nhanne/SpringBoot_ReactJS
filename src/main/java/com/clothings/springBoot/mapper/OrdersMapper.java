@@ -33,4 +33,8 @@ public interface OrdersMapper {
 	int updateByPrimaryKey(Orders row);
 
 	List<Map<String, Object>> getOrders(Map<String, Object> param);
+	
+	void insertOrder(Map<String, Object> params);
+	
+	void updateOrder(Map<String, Object> params);
 }

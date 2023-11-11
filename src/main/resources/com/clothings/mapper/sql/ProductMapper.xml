@@ -386,8 +386,9 @@
 	</select>
 	<select id="getProductById" parameterType="Integer"
 		resultType="java.util.Map">
-		SELECT * FROM product WHERE Id = #{productId} LIMIT 1;
-	</select>
+		<!--		SELECT * FROM product WHERE Id = #{productId} LIMIT 1;--> SELECT product.*, category.name AS
+		category_name FROM product INNER JOIN category ON product.CategoryId =
+		category.Id WHERE product.Id = #{productId} LIMIT 1; </select>
 	<select id="productCart" parameterType="Integer"
 		resultType="com.clothings.springBoot.model.Product">
 		SELECT * FROM product WHERE Id = #{productId} LIMIT 1;
@@ -398,6 +399,19 @@
 		VALUES (#{categoryId}, #{picture}, #{name}, #{code}, #{unitPrice},
 		#{stockInDate})
 	</insert>
+	<update id="updateProduct" parameterType="java.util.Map">
+		UPDATE product
+		SET CategoryId = #{categoryId},
+		<if test="picture != null">
+            Picture = #{picture},
+        </if>
+		Name = #{name},
+		Code = #{code},
+		unitPrice = #{unitPrice},
+		stockInDate = #{stockInDate}
+		WHERE Id = #{productId}
+	</update>
+
 	<select id="deleteProductById" parameterType="Integer">
 		DELETE FROM product WHERE Id = #{productId}
 	</select>

@@ -36,16 +36,16 @@
 						<table class="table table-hover table-bordered">
 							<thead>
 								<tr>
-									<th>Mã sản phẩm</th>
+									<th style="width: 130px;">Mã sản phẩm</th>
 									<th>Tên sản phẩm</th>
 									<th>Ảnh</th>
 									<th>Giá tiền</th>
-									<th>Chức năng</th>
+									<th style="width: 200px;">Chức năng</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr th:each="product : ${listProducts}">
-									<td th:text="${product.Id}"></td>
+									<td th:text="${product.Code}"></td>
 									<td th:text="${product.Name}"></td>
 									<td><img th:src="@{../images/sp/} + ${product.Picture}" width="100px"></td>
 									<td th:text="${#numbers.formatDecimal(product.unitPrice, 0, 'COMMA', 0, 'POINT')}">
@@ -55,7 +55,7 @@
 											th:attr="data-id=${product.Id}" style="color: #fff">Xóa
 										</a>
 										<a class="btn btn-warning" type="button" title="Sửa"
-											th:attr="data-id=${product.Id}" style="color: #fff">Sửa
+											th:attr="data-id=${product.Id}" style="color: #fff">Chỉnh Sửa
 										</a>
 									</td>
 								</tr>
@@ -77,6 +77,12 @@
 				}
 			}
 		});
+		$('body').on('click', '.btn-warning', function () {
+			var Id = $(this).data('id');
+			if (parseInt(Id) > 0) {
+				UpdateById(Id);
+			}
+		});
 		function DeleteById(id) {
 			$.ajax({
 				type: "POST",
@@ -89,6 +95,19 @@
 				error: function (data) {
 					alert(data);
 					window.location.reload();
+				}
+			});
+		}
+		function UpdateById(Id) {
+			$.ajax({
+				type: "GET",
+				url: "/admin/product/update",
+				data: {id: Id},
+				success: function (data) {
+					window.location.href = "/admin/product/update?id="+Id;
+				},
+				error: function (data) {
+					
 				}
 			});
 		}

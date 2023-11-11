@@ -29,7 +29,7 @@
 											<div class="row mb-4 d-flex justify-content-between align-items-center">
 												<div class="col-md-2 col-lg-2 col-xl-2">
 													<img th:src="@{images/sp/} + ${item.getPicture()}"
-														class="img-fluid rounded-3" alt="Cotton T-shirt">
+														class="img-fluid rounded-3" alt="product Image">
 												</div>
 												<div class="col-md-3 col-lg-3 col-xl-3">
 													<h6 class="text-black mb-0" th:text="${item.getProductName()}">
@@ -152,24 +152,33 @@
 					if (response.ok) {
 						window.location.reload();
 					} else {
-
+						alert("Có lỗi xảy ra");
 					}
 				})
 		}
 		function CheckOut() {
-			var name = document.getElementById("full_name").value;
-			var email = document.getElementById("email").value;
-			var phone = document.getElementById("phone").value;
-			var streets = document.getElementById("street").value;
-			var note = document.getElementById("note").value;
-			var order = {name, email, phone, streets, note};
-			console.log(order);
+			var formData = new FormData();
+			formData.append("name", document.getElementById("full_name").value);
+			formData.append("email", document.getElementById("email").value);
+			formData.append("phone", document.getElementById("phone").value);
+			formData.append("streets", document.getElementById("street").value);
+			formData.append("note", document.getElementById("note").value);
+
+			$.ajax({
+				type: "POST",
+				url: "/cart/checkout",
+				data: formData,
+				processData: false, 
+				contentType: false,  
+				success: function (data) {
+					alert("Đặt hàng thành công, chúng tôi sẽ sớm liên lạc với bạn");
+					window.location.reload();
+				},
+				error: function (data) {
+					alert("Có lỗi xảy ra");
+				}
+			});
 		}
-
-
-
-
-
 	</script>
 </body>
 

@@ -268,4 +268,17 @@
     where OrderId = #{orderid,jdbcType=INTEGER}
       and ProductId = #{productid,jdbcType=INTEGER}
   </update>
+  <insert id="insertDetail" parameterType="java.util.Map">
+		INSERT INTO `orderdetail` (OrderId, ProductId, Quantity, UnitPrice)
+        VALUES (#{orderId}, #{productId}, #{Quantity}, #{UnitPrice})
+	</insert>
+	
+	<select id="getOrderDetail" parameterType="map" resultType="java.util.Map">
+		SELECT *
+		FROM orderdetail
+		JOIN orders ON orderdetail.orderId = orders.Id
+		JOIN product ON orderdetail.productId = product.Id
+		JOIN user ON user.id = orders.Id
+		WHERE orderdetail.OrderId = #{orderId}
+	</select>
 </mapper>

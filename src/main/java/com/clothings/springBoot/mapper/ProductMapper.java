@@ -42,6 +42,8 @@ public interface ProductMapper {
 
 	void insertProduct(Map<String, Object> params);
 
+	void updateProduct(Map<String, Object> params);
+
 	void deleteProductById(Integer productId);
 
 }

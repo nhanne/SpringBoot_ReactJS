@@ -245,5 +245,12 @@
 	  select * from user
 	  where user_name = #{userName} and id = #{id}
   </select>
+  <insert id="insertUser" parameterType="java.util.Map">
+		INSERT INTO `user` (full_name, email, phone)
+        VALUES (#{name}, #{email}, #{phone})
+           <selectKey keyProperty="id" resultType="java.lang.Integer" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+	</insert>
   
 </mapper>

@@ -343,6 +343,17 @@
 		SELECT *
 		FROM orders
 		JOIN user ON orders.userId = user.Id
-<!--		WHERE orders.userId = 1;-->
 	</select>
+	<insert id="insertOrder" parameterType="java.util.Map">
+		INSERT INTO `orders` (Status, Address, OrdTime, DeliTime, TotalPrice, Note, UserId)
+        VALUES (#{status}, #{streets}, #{ordtime}, #{delitime}, #{totalPrice}, #{note}, #{userId})
+           <selectKey keyProperty="id" resultType="java.lang.Integer" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+	</insert>
+	<update id="updateOrder" parameterType="java.util.Map">
+		UPDATE orders
+		SET Status = #{status}
+		WHERE Id = #{orderId}
+	</update>
 </mapper>
