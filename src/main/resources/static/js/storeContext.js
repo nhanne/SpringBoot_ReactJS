@@ -1,37 +1,25 @@
 import React from 'react'
-import { useState, useEffect, useRef, createContext } from 'react'
+import { useState, useEffect, createContext } from 'react'
 
 const FilterContext = createContext()
 function FilterProvider({ children }) {
     const [search, setSearch] = useState('');
     const [sort, setSort] = useState('Mặc định');
     const [category, setCategory] = useState('');
-    const [page, setPage] = useState(1);
     const [products, setProducts] = useState([]);
-    const totalPages = useRef();
 
     useEffect(() => {
-        fetch(`/Home/getData?category=${category}&&sort=${sort}&&search=${search}&&page=${page}`)
+        fetch(`/products?category=${category}&&sort=${sort}&&name=${search}`)
             .then(res => res.json())
-            .then(reponse => {
-                if (reponse.products.length > 0) {
-                    totalPages.current = reponse.totalPages;
-                }
-                setProducts(reponse.products);
-
+            .then(response => {
+                setProducts(response);
             });
-    }, [category, sort, search, page])
-
-    if (page > totalPages.current) {
-        setPage(1)
-    }
+    }, [category, sort, search])
     
     const value = {
         search, setSearch,
         sort, setSort,
         category, setCategory,
-        page, setPage,
-        totalPages,
         products
     }
 

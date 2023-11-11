@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Quản lí sản phẩm</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+		integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="icon" type="image/png" th:href="@{/images/system/nhan.png}" />
+
+</head>
+
+<body class="container">
+	<hr />
+	<div>
+		<a class="btn btn-primary" href="/admin/products">
+			<span class="app-menu__label">Quản lý sản phẩm
+			</span>
+		</a>
+		<a class="btn btn-primary" href="/admin/orders">
+			<span class="app-menu__label">Quản lý đơn hàng</span>
+		</a>
+	</div>
+	<hr />
+	<main class="app-content">
+		<a class="btn btn-success" href="/admin/product/create">
+			<span class="app-menu__label">Thêm sản phẩm mới</span>
+		</a>
+		<hr />
+		<div class="row">
+			<div class="col-md-12">
+				<div class="tile">
+					<div class="tile-body">
+
+						<table class="table table-hover table-bordered">
+							<thead>
+								<tr>
+									<th>Mã sản phẩm</th>
+									<th>Tên sản phẩm</th>
+									<th>Ảnh</th>
+									<th>Giá tiền</th>
+									<th>Chức năng</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="product : ${listProducts}">
+									<td th:text="${product.Id}"></td>
+									<td th:text="${product.Name}"></td>
+									<td><img th:src="@{../images/sp/} + ${product.Picture}" width="100px"></td>
+									<td th:text="${#numbers.formatDecimal(product.unitPrice, 0, 'COMMA', 0, 'POINT')}">
+									</td>
+									<td>
+										<a class="btn btn-danger" type="button" title="Xóa"
+											th:attr="data-id=${product.Id}" style="color: #fff">Xóa
+										</a>
+										<a class="btn btn-warning" type="button" title="Sửa"
+											th:attr="data-id=${product.Id}" style="color: #fff">Sửa
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<script th:src="@{../vendor/jquery/jquery-3.2.1.min.js}"></script>
+	<script>
+		$('body').on('click', '.btn-danger', function () {
+			var Id = $(this).data('id');
+			if (parseInt(Id) > 0) {
+				var conf = confirm('Bạn có chắc chắn muốn xóa?');
+				if (conf) {
+					DeleteById(Id);
+				}
+			}
+		});
+		function DeleteById(id) {
+			$.ajax({
+				type: "POST",
+				url: "/admin/product/delete",
+				data: {id: id},
+				success: function (data) {
+					alert(data);
+					window.location.reload();
+				},
+				error: function (data) {
+					alert(data);
+					window.location.reload();
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>

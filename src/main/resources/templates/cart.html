@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Cart</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+		integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="icon" type="image/png" th:href="@{/images/system/nhan.png}" />
+</head>
+
+<body>
+
+	<section class="h-custom" style="background-color: #838383;">
+		<div class="container py-5">
+			<div class="row d-flex justify-content-center align-items-center">
+				<div class="col-12">
+					<div class="card card-registration card-registration-2" style="border-radius: 15px;">
+						<div class="card-body p-0">
+							<div class="row g-0">
+								<div class="col-lg-12">
+									<div class="p-5">
+										<div class="d-flex justify-content-between align-items-center mb-5">
+											<h1 class="fw-bold mb-0 text-black">Giỏ hàng</h1>
+										</div>
+										<div th:each="item : ${cart}">
+											<hr class="my-4">
+											<div class="row mb-4 d-flex justify-content-between align-items-center">
+												<div class="col-md-2 col-lg-2 col-xl-2">
+													<img th:src="@{images/sp/} + ${item.getPicture()}"
+														class="img-fluid rounded-3" alt="Cotton T-shirt">
+												</div>
+												<div class="col-md-3 col-lg-3 col-xl-3">
+													<h6 class="text-black mb-0" th:text="${item.getProductName()}">
+													</h6>
+													<h6 class="text-black mb-0"
+														th:text="${#numbers.formatDecimal(item.getUnitPrice(), 0, 'COMMA', 0, 'POINT')}">
+													</h6>
+												</div>
+												<div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+													<input name="quantity" id="quantity"
+														th:value="${item.getQuantity()}" type="number"
+														class="form-control form-control-sm" style="text-align: center;"
+														disabled />
+												</div>
+												<div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+													<h6 class="mb-0"
+														th:text="${#numbers.formatDecimal(item.getTotalPrice(), 0, 'COMMA', 0, 'POINT')}">
+													</h6>
+												</div>
+												<div class="col-md-1 col-lg-1 col-xl-1 text-end">
+													<button th:attr="data-product-id=${item.getProductId()}"
+														onclick="removeCartItem(this)" name="deleteButton"
+														class="btn btn-primary">Delete</button>
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="container py-5 h-100">
+		<div class="row h-100" style="background-color: #ffffff">
+			<div class="col-md-12">
+				<div class="p-5">
+					<h3 class="fw-bold mb-5 mt-2 pt-1">Thông tin khách hàng</h3>
+					<hr class="my-4">
+					<div class="row mb-5">
+						<div class="col-md-6">
+							<label class="form-label" for="FullName">Full name</label>
+							<input class="form-control" data-val="true" data-val-length="Vui lòng nhập họ tên thật"
+								data-val-length-max="50" data-val-length-min="5"
+								data-val-required="Vui lòng nhập họ tên" id="full_name" name="FullName"
+								placeholder="Họ tên của bạn" type="text" value="">
+							<span class="error text-danger"></span>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label" for="email">Email</label>
+							<input class="form-control" data-val="true" data-val-regex="Vui lòng nhập email hợp lệ"
+								data-val-required="Vui lòng nhập Email" id="email" name="Email"
+								placeholder="Email của bạn" type="text" value="">
+							<span class="error text-danger"></span>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label" for="phone_number">Phone number</label>
+							<input class="form-control" data-val="true"
+								data-val-regex="Vui lòng nhập số điện thoại hợp lệ"
+								data-val-regex-pattern="^(0[0-9]{9,10})$"
+								data-val-required="Vui lòng nhập số điện thoại" id="phone" name="Phone"
+								placeholder="Số điện thoại của bạn" type="text" value="">
+							<span class="error text-danger"></span>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label" for="street">Street Address</label>
+							<input type="text" placeholder="Số nhà và tên đường" class="form-control" id="street"
+								name="street" required>
+							<span class="error text-danger"></span>
+						</div>
+
+						<div class="col-12">
+							<input type="hidden" name="address" id="address" />
+							<input type="hidden" name="promo_code" id="promo_code" />
+						</div>
+						<div class="col-12">
+							<label class="form-label" for="note">Order notes (optional)</label>
+							<textarea id="note" class="form-control" placeholder="Something..." style="height: 100px"
+								name="note" maxlength="200"> </textarea>
+						</div>
+					</div>
+					<hr class="my-4">
+					<button id="goToStoreButton" type="button" class="btn btn-light btn-block btn-lg"
+						onclick="window.location.href='/store';">
+						Quay về
+					</button>
+
+
+					<button class="btn btn-dark btn-block btn-lg submit" id="submit" type="button" onclick="CheckOut()"
+						title="Order">
+						Place order
+					</button>
+				</div>
+			</div>
+		</div>
+		</div>
+	</section>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"> </script>
+	<script>
+		function removeCartItem(button) {
+			event.preventDefault();
+			var productId = button.getAttribute('data-product-id');
+
+			var request = new Request('/cart/remove', {
+				method: 'POST',
+				body: new URLSearchParams({'productId': productId}),
+				headers: new Headers({
+					'Content-Type': 'application/x-www-form-urlencoded'
+				})
+			});
+			fetch(request)
+				.then(response => {
+					if (response.ok) {
+						window.location.reload();
+					} else {
+
+					}
+				})
+		}
+		function CheckOut() {
+			var name = document.getElementById("full_name").value;
+			var email = document.getElementById("email").value;
+			var phone = document.getElementById("phone").value;
+			var streets = document.getElementById("street").value;
+			var note = document.getElementById("note").value;
+			var order = {name, email, phone, streets, note};
+			console.log(order);
+		}
+
+
+
+
+
+	</script>
+</body>
+
+</html>

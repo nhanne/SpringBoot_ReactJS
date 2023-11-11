@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 
 import { FilterProvider } from './storeContext.js'
+import GetData from './Components/data.js'
 import Categories from './Components/category.js'
 import Filter from './Components/filter.js'
-import GetData from './Components/data.js'
 
 function App() {
     return (
@@ -25,5 +25,5 @@ function App() {
     )
 }
 
-ReactDOM.render(<App />, document.querySelector('#root'))
+ReactDOM.render(<App />, document.querySelector('#main'))
 

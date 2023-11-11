@@ -5,21 +5,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.clothings.springBoot.mapper.CategoryMapper;
 import com.clothings.springBoot.mapper.ProductMapper;
-import com.clothings.springBoot.model.Product;
-import com.clothings.springBoot.model.ProductExample;
 
 @Controller
 public class HomePageController {
-
 	@Autowired
 	ProductMapper productMapper;
+	@Autowired
+	CategoryMapper categoryMapper;
 
 	@GetMapping("/")
 	public ModelAndView index() {
@@ -31,8 +32,7 @@ public class HomePageController {
 		ModelAndView modelAndView = new ModelAndView("store");
 		return modelAndView;
 	}
-
-	@GetMapping("/products")
+	@GetMapping(value = "/products", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Map<String, Object>>> products(
 			@RequestParam(name = "name", required = false) String name,
 			@RequestParam(name = "sort", required = false) String sort,
@@ -54,5 +54,15 @@ public class HomePageController {
 
 		return ResponseEntity.ok(listProducts);
 	}
-
+	@GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Map<String, Object>>> categories() {			  
+		List<Map<String, Object>> listCategories = categoryMapper.getCategories();
+		return ResponseEntity.ok(listCategories);
+	}
+	@GetMapping(value = "/getProduct", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Map<String, Object>>> getProduct(
+			@RequestParam(name = "Id", required = true) Integer Id) {			  
+		List<Map<String, Object>> product = productMapper.getProductById(Id);
+		return ResponseEntity.ok(product);
+	}
 }
