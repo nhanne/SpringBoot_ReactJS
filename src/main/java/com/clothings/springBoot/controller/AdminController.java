@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,12 +31,14 @@ public class AdminController {
 	OrdersMapper ordersMapper;
 	@Autowired
 	OrderDetailMapper orderDetailMapper;
+
 	@GetMapping
 	public ModelAndView index() {
 		ModelAndView modelAndView = new ModelAndView("admin");
 		return modelAndView;
 	}
 
+	// Orders
 	@GetMapping("/orders")
 	public ModelAndView orders() {
 		ModelAndView modelAndView = new ModelAndView("orders");
@@ -44,6 +47,7 @@ public class AdminController {
 		modelAndView.addObject("listOrders", listOrders);
 		return modelAndView;
 	}
+
 	@GetMapping("/orders/detail")
 	public ModelAndView ordersDetail(@RequestParam Integer id) {
 		Map<String, Object> params = new HashMap<>();
@@ -54,6 +58,7 @@ public class AdminController {
 		modelAndView.addObject("model", model.get(0));
 		return modelAndView;
 	}
+
 	@PostMapping("/orders/detail")
 	public ResponseEntity<String> confirmOrder(@RequestParam("orderId") Integer Id) {
 		try {
@@ -67,6 +72,7 @@ public class AdminController {
 		}
 	}
 
+	// Product
 	@GetMapping("/products")
 	public ModelAndView products() {
 		Map<String, Object> params = new HashMap<>();
@@ -78,18 +84,14 @@ public class AdminController {
 
 	@GetMapping("/product/create")
 	public ModelAndView create() {
-
 		ModelAndView modelAndView = new ModelAndView("createProduct");
 		return modelAndView;
 	}
 
 	@PostMapping("/product/create")
-	public ResponseEntity<String> createProduct(
-			@RequestParam("file") MultipartFile file,
-			@RequestParam("categoryid") Integer categoryid, 
-			@RequestParam("name") String name,
-			@RequestParam("code") String code, 
-			@RequestParam("unitprice") Float unitprice) {
+	public ResponseEntity<String> createProduct(@RequestParam("file") MultipartFile file,
+			@RequestParam("categoryid") Integer categoryid, @RequestParam("name") String name,
+			@RequestParam("code") String code, @RequestParam("unitprice") Float unitprice) {
 		try {
 			String uploadPath = System.getProperty("user.dir") + "/src/main/resources/static/images/sp/";
 			File uploadDir = new File(uploadPath);
@@ -131,19 +133,17 @@ public class AdminController {
 		modelAndView.addObject("product", product);
 		return modelAndView;
 	}
+
 	@PostMapping("/product/update")
-	public ResponseEntity<String> updateProduct(
-			@RequestParam(value = "file", required = false) MultipartFile file,
-			@RequestParam("productId") Integer productId, 
-			@RequestParam("categoryId") Integer categoryId, 
-			@RequestParam("name") String name,
-			@RequestParam("code") String code, 
+	public ResponseEntity<String> updateProduct(@RequestParam(value = "file", required = false) MultipartFile file,
+			@RequestParam("productId") Integer productId, @RequestParam("categoryId") Integer categoryId,
+			@RequestParam("name") String name, @RequestParam("code") String code,
 			@RequestParam("unitprice") Float unitprice) {
 		try {
 			Map<String, Object> params = new HashMap<>();
 			params.put("productId", productId);
 			params.put("categoryId", categoryId);
-			if(file != null) {
+			if (file != null) {
 				String uploadPath = System.getProperty("user.dir") + "/src/main/resources/static/images/sp/";
 				File uploadDir = new File(uploadPath);
 				if (!uploadDir.exists()) {
@@ -166,4 +166,30 @@ public class AdminController {
 		}
 	}
 
+	// Revenue statistics
+	@GetMapping("/revenue")
+	public ModelAndView Revenue() {
+		ModelAndView modelAndView = new ModelAndView("revenue");
+		return modelAndView;
+	}
+
+	@PostMapping("/revenue")
+	public ResponseEntity<Map<String, Object>> onPostRevenue(
+			@RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
+			@RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end) {
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("startDate", start);
+		params.put("endDate", end);
+		List<Map<String, Object>> listOrders = ordersMapper.getOrders(params);
+		double tongtien = 0;
+		for (Map<String, Object> order : listOrders) {
+			Object totalAmountObj = order.get("TotalPrice");
+			tongtien += (Double) totalAmountObj;
+		}
+		Map<String, Object> result = new HashMap<>();
+		result.put("listOrders", listOrders);
+		result.put("tongtien", tongtien);
+		return ResponseEntity.ok(result);
+	}
 }

@@ -343,10 +343,13 @@
 		SELECT *
 		FROM orders
 		JOIN user ON orders.userId = user.Id
+		<if test="startDate != null and endDate != null">
+             WHERE OrdTime >= #{startDate} AND OrdTime &lt;= #{endDate}
+        </if>
 	</select>
 	<insert id="insertOrder" parameterType="java.util.Map">
-		INSERT INTO `orders` (Status, Address, OrdTime, DeliTime, TotalPrice, Note, UserId)
-        VALUES (#{status}, #{streets}, #{ordtime}, #{delitime}, #{totalPrice}, #{note}, #{userId})
+		INSERT INTO `orders` (Status, Address, OrdTime, DeliTime, TotalPrice, TotalQuantity,  Note, UserId)
+        VALUES (#{status}, #{streets}, #{ordtime}, #{delitime}, #{totalPrice}, #{totalQuantity} , #{note}, #{userId})
            <selectKey keyProperty="id" resultType="java.lang.Integer" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>

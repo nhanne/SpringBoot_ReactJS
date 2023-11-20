@@ -27,41 +27,45 @@ public class HomePageController {
 		ModelAndView modelAndView = new ModelAndView("index");
 		return modelAndView;
 	}
+
 	@GetMapping("/store")
 	public ModelAndView store() {
 		ModelAndView modelAndView = new ModelAndView("store");
 		return modelAndView;
 	}
+
 	@GetMapping(value = "/products", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Map<String, Object>>> products(
 			@RequestParam(name = "name", required = false) String name,
 			@RequestParam(name = "sort", required = false) String sort,
 			@RequestParam(name = "category", required = false) Integer category) {
 		Map<String, Object> params = new HashMap<>();
-	    if (name != null && !name.isEmpty()) {
-	        params.put("name", name);
-	    }
-	    
-	    if (sort != null && !sort.isEmpty()) {
-	        params.put("sort", sort);
-	    }
-	    
-	    if (category != null) {
-	        params.put("category", category);
-	    }
+		if (name != null && !name.isEmpty()) {
+			params.put("name", name);
+		}
+
+		if (sort != null && !sort.isEmpty()) {
+			params.put("sort", sort);
+		}
+
+		if (category != null) {
+			params.put("category", category);
+		}
 
 		List<Map<String, Object>> listProducts = productMapper.getProducts(params);
 
 		return ResponseEntity.ok(listProducts);
 	}
+
 	@GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Map<String, Object>>> categories() {			  
+	public ResponseEntity<List<Map<String, Object>>> categories() {
 		List<Map<String, Object>> listCategories = categoryMapper.getCategories();
 		return ResponseEntity.ok(listCategories);
 	}
+
 	@GetMapping(value = "/getProduct", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Map<String, Object>>> getProduct(
-			@RequestParam(name = "Id", required = true) Integer Id) {			  
+			@RequestParam(name = "Id", required = true) Integer Id) {
 		List<Map<String, Object>> product = productMapper.getProductById(Id);
 		return ResponseEntity.ok(product);
 	}

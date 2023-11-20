@@ -121,6 +121,11 @@ public class CartController {
 			paramsOrder.put("delitime", new Date());
 			paramsOrder.put("totalPrice", totalPrice());
 			paramsOrder.put("userId", userId);
+			int totalQuantity = 0;
+			for (CartItem item : listCart) {
+				totalQuantity += item.getQuantity();
+			}
+			paramsOrder.put("totalQuantity", totalQuantity);
 			orderMapper.insertOrder(paramsOrder);
 			Integer orderId = (Integer) paramsOrder.get("id");
 

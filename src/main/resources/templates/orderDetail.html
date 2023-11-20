@@ -20,6 +20,10 @@
 		<a class="btn btn-primary" href="/admin/orders">
 			<span class="app-menu__label">Quản lý đơn hàng</span>
 		</a>
+		<a class="btn btn-primary" href="/admin/revenue">
+			<span class="app-menu__label">Thống kê doanh thu</span>
+		</a>
+
 	</div>
 	<hr />
 	<div class="row">
@@ -63,8 +67,8 @@
 						<input class="form-control" type="text" th:value="${model.email}" disabled>
 					</div>
 					<div class="form-group  col-md-6">
-						<label class="control-label">Ghi chú</label>
-						<input class="form-control" type="text" th:value="${model.Note}" disabled>
+						<label class="control-label">Ngày đặt hàng</label>
+						<input class="form-control" type="date" th:value="${model.OrdTime}" disabled>
 					</div>
 					<div class="form-group  col-md-12">
 						<label class="control-label">Địa chỉ khách hàng</label>
@@ -85,7 +89,8 @@
 						<p th:text="${#numbers.formatDecimal(model.TotalPrice, 0, 'COMMA', 0, 'POINT')}"></p>
 					</div>
 					<div class="col-md-12">
-						<button th:if="${model.Status == 'Chưa giao hàng'}" th:attr="data-id=${model.OrderId}" class="btn btn-success">Xác nhận đơn hàng</button>
+						<button th:if="${model.Status == 'Chưa giao hàng'}" th:attr="data-id=${model.OrderId}"
+							class="btn btn-success">Xác nhận đơn hàng</button>
 					</div>
 				</div>
 			</div>
@@ -101,23 +106,23 @@
 				submit(Id);
 			}
 		});
-		function submit(Id){
+		function submit(Id) {
 			var formData = new FormData();
 			formData.append('orderId', parseInt(Id));
 			$.ajax({
-					type: "POST",
-					url: "/admin/orders/detail",
-					data: formData,
-					processData: false,
-					contentType: false,
-					success: function (data) {
-						alert("Tiếp nhận đơn hàng thành công");
-						window.location.reload();
-					},
-					error: function (data) {
-						alert("Tiếp nhận đơn hàng thất bại");
-					}
-				});
+				type: "POST",
+				url: "/admin/orders/detail",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (data) {
+					alert("Tiếp nhận đơn hàng thành công");
+					window.location.reload();
+				},
+				error: function (data) {
+					alert("Tiếp nhận đơn hàng thất bại");
+				}
+			});
 		}
 	</script>
 </body>

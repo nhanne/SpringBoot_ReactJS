@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Quản lí đơn hàng</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+		integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="icon" type="image/png" th:href="@{/images/system/nhan.png}" />
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="container">
+	<hr />
+	<div>
+		<a class="btn btn-primary" href="/admin/products">
+			<span class="app-menu__label">Quản lý sản phẩm
+			</span>
+		</a>
+		<a class="btn btn-primary" href="/admin/orders">
+			<span class="app-menu__label">Quản lý đơn hàng</span>
+		</a>
+		<a class="btn btn-primary" href="/admin/revenue">
+			<span class="app-menu__label">Thống kê doanh thu</span>
+		</a>
+	</div>
+	<hr />
+	<main class="app-content">
+		<h2>Thống kê doanh thu: <span id="tongtien"></span></h2>
+		<hr />
+		<form style="text-align: center;">
+			<div class="row">
+				<div class="form-group col-md-6">
+					<label for="startDate">Từ:</label>
+					<input type="date" class="form-control" id="startDate">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="endDate">Đến:</label>
+					<input type="date" class="form-control" id="endDate">
+				</div>
+			</div>
+			<button type="button" onclick="filter()" class="btn btn-success">Lọc</button>
+		</form>
+		<canvas id="myChart" width="400" height="200"></canvas>
+		<hr />
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th>Mã đơn hàng</th>
+					<th>Khách hàng</th>
+					<th>Số điện thoại</th>
+					<th>Địa chỉ</th>
+					<th>Ngày đặt hàng</th>
+					<th>Tổng tiền</th>
+				</tr>
+			</thead>
+			<tbody id="listOrders">
+
+			</tbody>
+		</table>
+	</main>
+	<script th:src="@{../vendor/jquery/jquery-3.2.1.min.js}"></script>
+	<script>
+		// Hàm để vẽ biểu đồ từ dữ liệu đã xử lý
+		var myChart
+		function drawChart(labels, data) {
+			// Lấy thẻ canvas
+			var ctx = document.getElementById('myChart').getContext('2d');
+			// Hủy biểu đồ hiện tại nếu đã tồn tại
+			if (myChart) {
+				myChart.destroy();
+			}
+			// Tạo biểu đồ cột
+			myChart = new Chart(ctx, {
+				type: 'bar',
+				data: {
+					labels: labels,
+					datasets: [{
+						label: 'Tổng doanh thu',
+						backgroundColor: 'rgba(75, 192, 192, 0.2)',
+						borderColor: 'rgba(75, 192, 192, 1)',
+						borderWidth: 1,
+						data: data,
+					}]
+				},
+				options: {
+					scales: {
+						y: {
+							beginAtZero: true
+						}
+					}
+				}
+			});
+		}
+
+		// Gọi hàm vẽ biểu đồ với dữ liệu đã xử lý
+		function filter() {
+			var startDate = $('#startDate').val();
+			var endDate = $('#endDate').val();
+
+			$.ajax({
+				type: 'POST',
+				url: '/admin/revenue',
+				data: {startDate: startDate, endDate: endDate},
+				success: function (data) {
+					$('#tongtien').text(data.tongtien.toLocaleString('vi-VN') + " VNĐ");
+					var jsonData = data.listOrders;
+					console.log(jsonData);
+					var html = ``;
+					if (jsonData.length > 0) {
+						for (let i = 0; i < jsonData.length; i++) {
+							html += `
+							<tr>
+								<td>#${jsonData[i].Id}</td>
+								<td>${jsonData[i].full_name}</td>
+								<td>${jsonData[i].phone}</td>
+								<td>${jsonData[i].Address}</td>
+								<td>${jsonData[i].OrdTime}</td>
+								<td>${jsonData[i].TotalPrice.toLocaleString()}</td>
+							</tr>
+							`
+						}
+					}
+					$('#listOrders').html(html);
+					var dataByMonth = {};
+					jsonData.forEach(item => {
+						var month = item.OrdTime.split('-')[1]; // Lấy thông tin tháng
+						if (!dataByMonth[month]) {
+							dataByMonth[month] = {
+								totalPrice: 0,
+								count: 0
+							};
+						}
+						dataByMonth[month].totalPrice += item.TotalPrice;
+						dataByMonth[month].count += 1;
+					});
+
+					// Chuyển dữ liệu sang mảng để vẽ biểu đồ
+					var labels = Object.keys(dataByMonth).sort((a, b) => parseInt(a) - parseInt(b)).map(month => 'Tháng ' + month);
+					var totalPriceData = labels.map(month => dataByMonth[month.slice(6)].totalPrice);
+
+					drawChart(labels, totalPriceData);
+				},
+				error: function (error) {
+					console.error('Error:', error);
+				}
+			});
+		}
+
+
+	</script>
+</body>
+
+</html>
